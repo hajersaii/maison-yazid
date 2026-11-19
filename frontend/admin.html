@@ -1,0 +1,547 @@
+
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="theme-color" content="#183b32">
+
+    <title>Administration | Maison Yazid</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Playfair+Display:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+    <link rel="stylesheet" href="style.css">
+
+    <style>
+        body {
+            background: #f7f5ef;
+        }
+
+        .admin-sidebar {
+            min-height: 100vh;
+            position: sticky;
+            top: 0;
+            height: 100vh;
+        }
+
+        .admin-main {
+            max-width: 1600px;
+            margin: auto;
+            padding: 45px clamp(20px, 4vw, 65px);
+        }
+
+        .admin-heading h1 {
+            font-size: clamp(30px, 4vw, 42px);
+        }
+
+        .admin-stats {
+            gap: 22px;
+        }
+
+        .stat-card {
+            border: 1px solid #eeeae0;
+            border-radius: 4px;
+            padding: 28px;
+            transition: transform .25s, box-shadow .25s;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 15px 35px rgba(24,59,50,.09);
+        }
+
+        .stat-card small {
+            display: block;
+        }
+
+        .admin-panel {
+            border: 1px solid #eeeae0;
+            border-radius: 4px;
+            margin-bottom: 25px;
+            padding: 28px;
+        }
+
+        .admin-table {
+            min-width: 550px;
+        }
+
+        .admin-table td,
+        .admin-table th {
+            padding: 17px 12px;
+        }
+
+        .admin-table button {
+            padding: 9px 14px;
+            border: 1px solid #eadbd0;
+            border-radius: 2px;
+            background: #fff;
+            color: #94654f;
+            cursor: pointer;
+            transition: .2s;
+        }
+
+        .admin-table button:hover {
+            background: #94654f;
+            color: white;
+        }
+
+        .admin-sidebar nav button {
+            font-family: inherit;
+            cursor: pointer;
+        }
+
+        .admin-sidebar nav a:first-child {
+            background: rgba(255,255,255,.1);
+            color: #d8bb88;
+        }
+
+        .admin-sidebar .brand {
+            text-decoration: none;
+        }
+
+        .admin-sidebar .brand-mark {
+            border-color: #b99a62;
+        }
+
+        .admin-messages article {
+            padding: 20px 0;
+            border-bottom: 1px solid #e7e3d9;
+        }
+
+        .admin-messages article:last-child {
+            border-bottom: 0;
+        }
+
+        .admin-messages p {
+            line-height: 1.8;
+            color: #656b62;
+            font-size: 13px;
+        }
+
+        .admin-empty {
+            color: #888;
+            font-size: 13px;
+            padding: 20px 0;
+        }
+
+        .admin-error {
+            color: #a34343;
+            background: #fff0ed;
+            padding: 15px;
+            font-size: 13px;
+        }
+
+        @media(max-width: 900px) {
+            .admin-shell {
+                grid-template-columns: 1fr;
+            }
+
+            .admin-sidebar {
+                position: relative;
+                height: auto;
+                min-height: auto;
+                padding: 20px;
+            }
+
+            .admin-sidebar nav {
+                margin-top: 20px;
+                display: flex;
+                flex-wrap: wrap;
+                gap: 5px;
+            }
+
+            .admin-sidebar nav a,
+            .admin-sidebar nav button {
+                padding: 10px;
+            }
+
+            .admin-main {
+                padding: 25px 16px;
+            }
+
+            .admin-stats {
+                grid-template-columns: 1fr;
+            }
+
+            .admin-heading {
+                align-items: flex-start;
+                gap: 15px;
+                flex-wrap: wrap;
+            }
+
+            .admin-panel {
+                padding: 18px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="admin-shell">
+
+    <!-- SIDEBAR -->
+    <aside class="admin-sidebar">
+
+        <a class="brand" href="index.html">
+
+            <span class="brand-mark" style="color:white">
+                MYR
+            </span>
+
+            <span class="brand-copy">
+                <strong>MAISON YAZID</strong>
+                <small style="color:#b8c4bb">
+                    Administration
+                </small>
+            </span>
+
+        </a>
+
+        <nav>
+            <a href="admin.html">Vue d'ensemble</a>
+            <a href="add-product.html">＋ Ajouter un produit</a>
+            <a href="index.html">↗ Voir le site</a>
+            <button id="logout">Déconnexion</button>
+        </nav>
+
+    </aside>
+
+
+    <!-- MAIN CONTENT -->
+    <main class="admin-main">
+
+        <div class="admin-heading">
+
+            <div>
+                <span class="eyebrow">ESPACE PRIVÉ</span>
+                <h1>Vue d'ensemble</h1>
+                <p style="color:#888;font-size:13px">
+                    Bienvenue dans votre espace de gestion Maison Yazid.
+                </p>
+            </div>
+
+            <a class="btn" href="add-product.html">
+                ＋ Nouveau produit
+            </a>
+
+        </div>
+
+
+        <!-- STATISTICS -->
+        <div class="admin-stats">
+
+            <div class="stat-card">
+                <small>Produits en ligne</small>
+                <strong id="productCount">—</strong>
+            </div>
+
+            <div class="stat-card">
+                <small>Demandes reçues</small>
+                <strong id="messageCount">—</strong>
+            </div>
+
+            <div class="stat-card">
+                <small>Statut du site</small>
+                <strong style="font-size:20px">
+                    <span style="color:#39865c">●</span>
+                    En ligne
+                </strong>
+            </div>
+
+        </div>
+
+
+        <!-- PRODUCTS -->
+        <section class="admin-panel">
+
+            <h2>Votre collection</h2>
+
+            <p style="color:#888;font-size:12px;margin-bottom:20px">
+                Gérez les articles disponibles sur votre boutique.
+            </p>
+
+            <div style="overflow-x:auto">
+
+                <table class="admin-table">
+
+                    <thead>
+                        <tr>
+                            <th>Produit</th>
+                            <th>Prix</th>
+                            <th>Ajouté le</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+
+                    <tbody id="adminProducts">
+
+                        <tr>
+                            <td colspan="4">Chargement...</td>
+                        </tr>
+
+                    </tbody>
+
+                </table>
+
+            </div>
+
+        </section>
+
+
+        <!-- CLIENT MESSAGES -->
+        <section class="admin-panel">
+
+            <h2>Messages clients</h2>
+
+            <p style="color:#888;font-size:12px;margin-bottom:15px">
+                Consultez les demandes envoyées par vos clients.
+            </p>
+
+            <div id="adminMessages" class="admin-messages">
+                <div class="admin-empty">Chargement...</div>
+            </div>
+
+        </section>
+
+
+        <footer style="padding:25px 0;color:#999;font-size:11px">
+            MAISON YAZID · ADMINISTRATION · 2026
+        </footer>
+
+    </main>
+
+</div>
+
+
+<!-- MAIN JAVASCRIPT -->
+<script src="script.js"></script>
+
+<script>
+
+    // AUTHENTICATION
+
+    const token = localStorage.getItem('myr_admin_token');
+
+    if (!token) {
+        window.location.href = 'login.html';
+    }
+
+    const headers = {
+        Authorization: 'Bearer ' + token
+    };
+
+
+    // API REQUEST
+
+    async function adminReq(url, opts = {}) {
+
+        return request(url, {
+            ...opts,
+
+            headers: {
+                ...headers,
+                ...(opts.headers || {})
+            }
+        });
+
+    }
+
+
+    // LOAD DASHBOARD
+
+    async function loadDashboard() {
+
+        try {
+
+            const [productResponse, messageResponse] =
+                await Promise.all([
+
+                    adminReq('/api/products'),
+                    adminReq('/api/contact')
+
+                ]);
+
+            const products = productResponse.data || [];
+            const messages = messageResponse.data || [];
+
+
+            // STATISTICS
+
+            document.querySelector('#productCount')
+                .textContent = products.length;
+
+            document.querySelector('#messageCount')
+                .textContent = messages.length;
+
+
+            // PRODUCTS
+
+            const productContainer =
+                document.querySelector('#adminProducts');
+
+            productContainer.innerHTML = products.length
+
+                ? products.map(product => `
+
+                    <tr>
+
+                        <td>
+                            <strong>${escapeHTML(product.name)}</strong>
+                        </td>
+
+                        <td>
+                            ${money(product.price)}
+                        </td>
+
+                        <td>
+                            ${product.createdAt
+                                ? new Date(product.createdAt).toLocaleDateString('fr-FR')
+                                : '—'}
+                        </td>
+
+                        <td>
+
+                            <button data-delete="${escapeHTML(product._id)}">
+                                Supprimer
+                            </button>
+
+                        </td>
+
+                    </tr>
+
+                `).join('')
+
+                : `
+                    <tr>
+                        <td colspan="4">
+                            Aucun produit pour le moment.
+                        </td>
+                    </tr>
+                `;
+
+
+            // DELETE PRODUCT
+
+            productContainer
+                .querySelectorAll('[data-delete]')
+                .forEach(button => {
+
+                    button.onclick = async () => {
+
+                        if (!confirm('Supprimer définitivement ce produit ?')) {
+                            return;
+                        }
+
+                        try {
+
+                            button.disabled = true;
+
+                            await adminReq(
+                                '/api/products/' + button.dataset.delete,
+                                { method: 'DELETE' }
+                            );
+
+                            toast('Produit supprimé avec succès');
+
+                            await loadDashboard();
+
+                        } catch (error) {
+
+                            button.disabled = false;
+                            toast(error.message);
+
+                        }
+
+                    };
+
+                });
+
+
+            // CLIENT MESSAGES
+
+            const messageContainer =
+                document.querySelector('#adminMessages');
+
+            messageContainer.innerHTML = messages.length
+
+                ? messages.map(message => `
+
+                    <article>
+
+                        <strong>
+                            ${escapeHTML(message.name)}
+                        </strong>
+
+                        <small style="color:#888">
+                            · ${escapeHTML(message.email)}
+                            · ${message.createdAt
+                                ? new Date(message.createdAt).toLocaleString('fr-FR')
+                                : ''}
+                        </small>
+
+                        <p>
+                            ${escapeHTML(message.message)}
+                        </p>
+
+                    </article>
+
+                `).join('')
+
+                : `
+                    <div class="admin-empty">
+                        Aucun message reçu pour le moment.
+                    </div>
+                `;
+
+
+        } catch (error) {
+
+            if (
+                error.message.toLowerCase().includes('token') ||
+                error.message.toLowerCase().includes('administrateur')
+            ) {
+
+                localStorage.removeItem('myr_admin_token');
+
+                window.location.href = 'login.html';
+
+                return;
+
+            }
+
+            document.querySelector('#adminProducts').innerHTML = `
+                <tr>
+                    <td colspan="4" class="admin-error">
+                        ${escapeHTML(error.message)}
+                    </td>
+                </tr>
+            `;
+
+        }
+
+    }
+
+
+    // LOGOUT
+
+    document.querySelector('#logout').onclick = () => {
+
+        localStorage.removeItem('myr_admin_token');
+
+        window.location.href = 'login.html';
+
+    };
+
+
+    // INITIALIZATION
+
+    loadDashboard();
+
+</script>
+
+</body>
+</html>

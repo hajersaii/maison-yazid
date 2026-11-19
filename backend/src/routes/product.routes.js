@@ -1,0 +1,22 @@
+const router = require('express').Router();
+const multer = require('multer');
+const path = require('path');
+const fs = require('fs');
+const Product = require('../models/Product');
+const auth = require('../middleware/auth.middleware');
+const adminOnly = auth.adminOnly;
+const uploadDir = path.join(__dirname, '../../uploads');
+fs.mkdirSync(uploadDir, { recursive: true });
+const storage = multer.diskStorage({ destination: (_req, _file, cb) => cb(null, uploadDir), filename: (_req, file, cb) => cb(null, `${Date.now()}-${Math.round(Math.random()*1e9)}${path.extname(file.originalname).toLowerCase()}`) });
+const upload = multer({ storage, limits: { fileSize: 5 * 1024 * 1024 }, fileFilter: (_req, file, cb) => cb(null, ['image/jpeg','image/png','image/webp'].includes(file.mimetype)) });
+router.get('/', async (_req, res) => { const data = await Product.find().sort({ createdAt: -1 }).lean(); res.json({ success: true, data }); });
+router.post('/', auth, adminOnly, upload.single('image'), async (req, res) => {
+  const { name, price, description = '' } = req.body;
+  if (!name || !Number.isFinite(Number(price)) || Number(price) < 0) return res.status(400).json({ success: false, error: 'Nom et prix valide requis.' });
+  if (!req.file) return res.status(400).json({ success: false, error: 'Une image JPG, PNG ou WEBP est requise (5 Mo maximum).' });
+  const data = await Product.create({ name, price: Number(price), description, image: `/uploads/${req.file.filename}` });
+  res.status(201).json({ success: true, data });
+});
+router.put('/:id', auth, adminOnly, async (req, res) => { const data = await Product.findByIdAndUpdate(req.params.id, req.body, { new: true, runValidators: true }); if (!data) return res.status(404).json({ success:false,error:'Produit introuvable.' }); res.json({ success: true, data }); });
+router.delete('/:id', auth, adminOnly, async (req, res) => { const data = await Product.findByIdAndDelete(req.params.id); if (!data) return res.status(404).json({ success:false,error:'Produit introuvable.' }); res.json({ success: true }); });
+module.exports = router;

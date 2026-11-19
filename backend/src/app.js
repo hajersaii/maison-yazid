@@ -1,0 +1,26 @@
+const express = require('express');
+const path = require('path');
+const helmet = require('helmet');
+const cors = require('cors');
+const hpp = require('hpp');
+const app = express();
+const frontendPath = path.join(__dirname, '../../frontend');
+app.disable('x-powered-by');
+app.use(helmet({ crossOriginResourcePolicy: { policy: 'cross-origin' }, contentSecurityPolicy: { directives: { defaultSrc: ["'self'"], styleSrc: ["'self'", "'unsafe-inline'", 'https://fonts.googleapis.com'], fontSrc: ["'self'", 'https://fonts.gstatic.com', 'data:'], imgSrc: ["'self'", 'data:', 'https:'], scriptSrc: ["'self'", "'unsafe-inline'"], connectSrc: ["'self'"] } } }));
+app.use(cors({ origin: process.env.CORS_ORIGIN ? process.env.CORS_ORIGIN.split(',') : true }));
+app.use(express.json({ limit: '30kb' }));
+app.use(express.urlencoded({ extended: true, limit: '30kb' }));
+app.use((req, _res, next) => {
+  const clean = value => { if (Array.isArray(value)) return value.map(clean); if (value && typeof value === 'object') return Object.fromEntries(Object.entries(value).filter(([key]) => !key.startsWith('$') && !key.includes('.')).map(([key, val]) => [key, clean(val)])); return value; };
+  if (req.body && typeof req.body === 'object') req.body = clean(req.body);
+  next();
+});
+app.use(hpp());
+app.use('/uploads', express.static(path.join(__dirname, '../uploads'), { maxAge: '7d', immutable: true }));
+app.use(express.static(frontendPath));
+app.get('/api/health', (_req, res) => res.json({ success: true, service: 'Maison Yazid API', status: 'healthy' }));
+app.use('/api/auth', require('./routes/auth.routes'));
+app.use('/api/products', require('./routes/product.routes'));
+app.use('/api/contact', require('./routes/contact.routes'));
+app.use((err, _req, res, _next) => { console.error(err); if (err instanceof require('multer').MulterError) return res.status(400).json({ success:false,error:err.code==='LIMIT_FILE_SIZE'?'Image trop volumineuse (5 Mo maximum).':'Fichier image invalide.' }); res.status(500).json({ success: false, error: 'Erreur interne du serveur.' }); });
+module.exports = app;
